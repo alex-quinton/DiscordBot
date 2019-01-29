@@ -185,8 +185,11 @@ async def on_message(message):
                             #subtract old choice by one, increment new choice by one, reassign vote entry
                             msg = "Vote changed!"
                             polls[message.channel].answers[polls[message.channel].registeredVotes[message.author]][1] -= 1 #editing an entry in the answers array
+
                             if polls[message.channel].registeredVotes[message.author] == choice:
                                 msg = "Uhh, says here that you already picked that option..."
+
+                            #re-sets the player's choice to avoid repeated subtracting of player's first choice
                             polls[message.channel].registeredVotes[message.author] = choice
                             polls[message.channel].answers[choice][1] += 1
                             await client.send_message(message.channel, msg)
