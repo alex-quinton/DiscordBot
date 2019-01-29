@@ -151,14 +151,14 @@ async def on_message(message):
             await client.send_message(message.channel, msg)
 
         if pollCommand == 'check':
-            msg = "There currently isn't a poll running in this channel. Wait, I mean 'OOPSIE! WE COULDN'T FIND DA POLL YOU WERE LOOKING FOR, SOWWY UwU' "
+            msg = "There currently isn't a poll running in this channel."
             if message.channel in polls:
                 msg = str(polls[message.channel])
             await client.send_message(message.channel, msg)
 
         if pollCommand == 'start':
             if message.channel in polls:
-                msg = "Sorry, I've already got a poll running in this channel, and Quinton's too lazy to let me have several at a time since that would require a dict with lists as values instead of individual poll objects... also it would make voting a pain"
+                msg = "Sorry, I've already got a poll running in this channel"
                 await client.send_message(message.channel, msg)
             else:
                 comma_text = text.split(',')
@@ -170,7 +170,7 @@ async def on_message(message):
                     comma_text.pop(len(comma_text) - 1)
 
                 polls[message.channel] = Poll(prompt, comma_text)
-                msg = "Great, I'll set that all up for you. Enjoy your new poll! ^w^"
+                msg = "Great, I'll set that all up for you. Enjoy your new poll!"
                 await client.send_message(message.channel, msg)
 
         if pollCommand == 'vote':
@@ -182,11 +182,13 @@ async def on_message(message):
                         await client.send_message(message.channel, msg)
                     else:
                         if message.author in polls[message.channel].registeredVotes:
-                            #subtract old choice by one, increment new choice by one
-                            polls[message.channel].answers[polls[message.channel].registeredVotes[message.author]][1] -= 1
-                            polls[message.channel].registeredVotes[message.author][0] = choice
-                            polls[message.channel].answers[choice][1] += 1
+                            #subtract old choice by one, increment new choice by one, reassign vote entry
                             msg = "Vote changed!"
+                            polls[message.channel].answers[polls[message.channel].registeredVotes[message.author]][1] -= 1 #editing an entry in the answers array
+                            if polls[message.channel].registeredVotes[message.author] == choice:
+                                msg = "Uhh, says here that you already picked that option..."
+                            polls[message.channel].registeredVotes[message.author] = choice
+                            polls[message.channel].answers[choice][1] += 1
                             await client.send_message(message.channel, msg)
                         else:
                             polls[message.channel].answers[choice][1] += 1
